@@ -8,7 +8,7 @@ import { MessageCircle, X } from "lucide-react";
 
 export default function Component() {
   const [isOpen, setIsOpen] = useState(false);
-  const [response, setResponse] = useState([
+  const [response, setResponse] = useState<{ text: string; isBot: boolean; isTyping?: boolean; final?: boolean }[]>([
     { text: "¡Hola! ¿En qué puedo ayudarte?", isBot: true }
   ]);
   const [prompt, setPrompt] = useState('');
@@ -20,20 +20,22 @@ export default function Component() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLInputElement>) => {
+    if (e) {
+      e.preventDefault();
+    }
     if (!prompt.trim()) return;
-  
+
     setIsLoading(true);
-  
+
     // Añadir el mensaje del usuario al chat
     setResponse(prev => [...prev, { text: prompt, isBot: false }]);
     const userPrompt = prompt;
     setPrompt(''); // Limpiar el input
-  
+
     // Añadir la animación de "escribiendo..." del asistente
     setResponse(prev => [...prev, { text: "Escribiendo...", isBot: true, isTyping: true }]);
-  
+
     try {
       const response = await fetch('/api/assistant', {
         method: 'POST',
@@ -42,29 +44,32 @@ export default function Component() {
         },
         body: JSON.stringify({ prompt: userPrompt }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
-  
+
+      if (!response.body) {
+        throw new Error('Response body is null');
+      }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let done = false;
       let botMessage = '';
-  
+
       // Manejar el streaming de la respuesta del asistente
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
-  
+
         if (value) {
           let chunkValue = decoder.decode(value);
-  
+
           // Limpiar caracteres especiales no deseados
           chunkValue = chunkValue.replace(/【\d+:\d+†source】/g, '');
-  
+
           botMessage += chunkValue;
-  
+
           // Actualizar el último mensaje del bot en tiempo real
           setResponse(prev => {
             const updated = [...prev];
@@ -76,7 +81,7 @@ export default function Component() {
           });
         }
       }
-  
+
       // Marcar el mensaje como finalizado y quitar la etiqueta "escribiendo"
       setResponse(prev => {
         const updated = [...prev];
@@ -86,7 +91,7 @@ export default function Component() {
         }
         return updated;
       });
-  
+
       setIsLoading(false);
     } catch (error) {
       console.error('Error:', error);
@@ -94,9 +99,8 @@ export default function Component() {
       setIsLoading(false);
     }
   };
-  
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !isLoading) {
       handleSubmit(e);
     }
@@ -104,7 +108,7 @@ export default function Component() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
-      <h1 
+      <h1
         className={`text-4xl font-bold mb-8 text-center transition-opacity duration-1000 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}
       >
         Chatbot HITO{' '}
@@ -128,7 +132,7 @@ export default function Component() {
           <span className="relative z-10 px-4 py-1 text-sm">alpha</span>
         </span>
       </h1>
-      
+
       {/* Icono flotante del chatbot */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -157,11 +161,11 @@ export default function Component() {
             placeholder="Escribe un mensaje..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={handleKeyDown} // Añadir el manejador de evento onKeyDown
+            onKeyDown={handleKeyDown}
             className="flex-grow mr-2 bg-white text-[#363636] border-[#363636]"
             disabled={isLoading}
           />
-          <Button onClick={handleSubmit} size="sm" className="bg-white text-[#363636] hover:bg-gray-200 border border-[#363636]" disabled={isLoading}>
+          <Button onClick={() => handleSubmit()} size="sm" className="bg-white text-[#363636] hover:bg-gray-200 border border-[#363636]" disabled={isLoading}>
             {isLoading ? "Cargando..." : "Enviar"}
           </Button>
         </div>
