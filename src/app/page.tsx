@@ -21,19 +21,19 @@ export default function Component() {
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!prompt.trim()) return;
-
+  
     setIsLoading(true);
-
+  
     // Añadir el mensaje del usuario al chat
     setResponse(prev => [...prev, { text: prompt, isBot: false }]);
     const userPrompt = prompt;
     setPrompt(''); // Limpiar el input
-
+  
     // Añadir la animación de "escribiendo..." del asistente
     setResponse(prev => [...prev, { text: "Escribiendo...", isBot: true, isTyping: true }]);
-
+  
     try {
       const response = await fetch('/api/assistant', {
         method: 'POST',
@@ -42,46 +42,41 @@ export default function Component() {
         },
         body: JSON.stringify({ prompt: userPrompt }),
       });
-
+  
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
-
+  
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let done = false;
       let botMessage = '';
-
+  
       // Manejar el streaming de la respuesta del asistente
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
-        let chunkValue = decoder.decode(value);
-
-        if (chunkValue.includes('[FIN]')) {
-          done = true;
-          continue;
+  
+        if (value) {
+          let chunkValue = decoder.decode(value);
+  
+          // Limpiar caracteres especiales no deseados
+          chunkValue = chunkValue.replace(/【\d+:\d+†source】/g, '');
+  
+          botMessage += chunkValue;
+  
+          // Actualizar el último mensaje del bot en tiempo real
+          setResponse(prev => {
+            const updated = [...prev];
+            const lastIndex = updated.findIndex(msg => msg.isBot && msg.isTyping);
+            if (lastIndex !== -1) {
+              updated[lastIndex] = { text: botMessage, isBot: true, isTyping: true };
+            }
+            return updated;
+          });
         }
-
-        // Limpiar caracteres especiales no deseados
-        chunkValue = chunkValue.replace(/【\d+:\d+†source】/g, '');
-
-        botMessage += chunkValue;
-
-        // Añadir un pequeño retraso para reducir la velocidad de escritura
-        await new Promise(resolve => setTimeout(resolve, 50));
-
-        // Actualizar el último mensaje del bot en tiempo real
-        setResponse(prev => {
-          const updated = [...prev];
-          const lastIndex = updated.findIndex(msg => msg.isBot && msg.isTyping);
-          if (lastIndex !== -1) {
-            updated[lastIndex] = { text: botMessage, isBot: true, isTyping: true };
-          }
-          return updated;
-        });
       }
-
+  
       // Marcar el mensaje como finalizado y quitar la etiqueta "escribiendo"
       setResponse(prev => {
         const updated = [...prev];
@@ -91,7 +86,7 @@ export default function Component() {
         }
         return updated;
       });
-
+  
       setIsLoading(false);
     } catch (error) {
       console.error('Error:', error);
@@ -99,6 +94,7 @@ export default function Component() {
       setIsLoading(false);
     }
   };
+  
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !isLoading) {

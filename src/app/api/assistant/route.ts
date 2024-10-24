@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
         // Escuchar el evento 'end' para saber cuándo ha terminado el streaming
         (run as EventEmitter).on('end', () => {
-          const chunk = encoder.encode('[FIN]');
+          const chunk = encoder.encode(''); //assistant >
           controller.enqueue(chunk);
           controller.close();
         });
