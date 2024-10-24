@@ -100,6 +100,12 @@ export default function Component() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !isLoading) {
+      handleSubmit(e);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
       <h1 
@@ -155,6 +161,7 @@ export default function Component() {
             placeholder="Escribe un mensaje..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown} // Añadir el manejador de evento onKeyDown
             className="flex-grow mr-2 bg-white text-[#363636] border-[#363636]"
             disabled={isLoading}
           />
