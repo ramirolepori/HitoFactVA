@@ -11,6 +11,9 @@ export async function POST(req: Request) {
 
   const encoder = new TextEncoder();
 
+  // Variable para acumular la respuesta del asistente
+  let assistantResponse = "";
+
   const stream = new ReadableStream({
     async start(controller) {
       try {
@@ -36,6 +39,9 @@ export async function POST(req: Request) {
         });
 
         run.on("textDelta", (textDelta) => {
+          // Acumular el texto de la respuesta del asistente
+          assistantResponse += textDelta.value;
+
           const chunk = encoder.encode(textDelta.value);
           controller.enqueue(chunk);
         });
@@ -50,6 +56,9 @@ export async function POST(req: Request) {
           const chunk = encoder.encode(""); //assistant >
           controller.enqueue(chunk);
           controller.close();
+
+          // Imprimir la respuesta completa del asistente en consola
+          console.log("Respuesta del asistente:", assistantResponse);
         });
       } catch (error) {
         console.error("Error en la API:", error);

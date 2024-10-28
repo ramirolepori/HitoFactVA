@@ -7,30 +7,48 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCircle, X } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function Component() {
   const [isOpen, setIsOpen] = useState(false);
   const [response, setResponse] = useState<
-    { text: string; isBot: boolean; isTyping?: boolean; final?: boolean; isHTML?: boolean }[]
+    { text: string; isBot: boolean; isTyping?: boolean; final?: boolean }[]
   >([{ text: "¡Hola! ¿En qué puedo ayudarte?", isBot: true }]);
   const [prompt, setPrompt] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAutoScroll, setIsAutoScroll] = useState(true);
 
   // Referencia para el auto-scroll
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Efecto para el auto-scroll
+  // Efecto para el autoscroll
   useEffect(() => {
-    if (messagesEndRef.current) {
+    if (isAutoScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [response]);
+  }, [response, isAutoScroll]);
+
+  // Función para manejar el scroll del usuario
+  const handleScroll = () => {
+    if (scrollAreaRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
+
+      // Si el usuario está cerca del final, activamos el autoscroll
+      if (scrollHeight - scrollTop - clientHeight < 50) {
+        setIsAutoScroll(true);
+      } else {
+        setIsAutoScroll(false);
+      }
+    }
+  };
 
   const handleSubmit = async (
     e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLInputElement>
@@ -85,10 +103,6 @@ export default function Component() {
           // Limpiar caracteres especiales no deseados
           chunkValue = chunkValue.replace(/【\d+:\d+†source】/g, "");
 
-          // Reemplazar saltos de línea y viñetas con HTML
-          chunkValue = chunkValue.replace(/\n/g, "<br>");
-          chunkValue = chunkValue.replace(/•/g, "&bull;");
-
           botMessage += chunkValue;
 
           // Actualizar el último mensaje del bot en tiempo real
@@ -102,7 +116,6 @@ export default function Component() {
                 text: botMessage,
                 isBot: true,
                 isTyping: true,
-                isHTML: true,
               };
             }
             return updated;
@@ -113,15 +126,12 @@ export default function Component() {
       // Marcar el mensaje como finalizado y quitar la etiqueta "escribiendo"
       setResponse((prev) => {
         const updated = [...prev];
-        const lastIndex = updated.findIndex(
-          (msg) => msg.isBot && msg.isTyping
-        );
+        const lastIndex = updated.findIndex((msg) => msg.isBot && msg.isTyping);
         if (lastIndex !== -1) {
           updated[lastIndex] = {
             text: botMessage,
             isBot: true,
             final: true,
-            isHTML: true,
           };
         }
         return updated;
@@ -206,23 +216,44 @@ export default function Component() {
         <div className="bg-[#363636] p-2 text-center font-bold text-white border-b-2 border-[#363636]">
           Chat HITO
         </div>
-        <ScrollArea className="h-[300px] p-4">
+        <ScrollArea
+          className="h-[300px] p-4"
+          onScroll={handleScroll}
+          ref={scrollAreaRef}
+        >
+          {/* Mensajes */}
           {response.map((message, index) => (
             <div
               key={index}
-              className={`mb-4 ${
-                message.isBot ? "text-left" : "text-right"
-              }`}
+              className={`mb-4 ${message.isBot ? "text-left" : "text-right"}`}
             >
               {message.isBot ? (
-                <span
+                <div
                   className={`inline-block p-2 rounded-lg border border-[#363636] bg-gray-100 text-[#363636]`}
-                  dangerouslySetInnerHTML={{
-                    __html: message.isTyping
-                      ? `<em>${message.text}</em>`
-                      : message.text,
-                  }}
-                />
+                >
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      ul: ({ node, ...props }) => (
+                        <ul className="list-disc list-inside" {...props} />
+                      ),
+                      ol: ({ node, ...props }) => (
+                        <ol className="list-decimal list-inside" {...props} />
+                      ),
+                      li: ({ node, ...props }) => (
+                        <li className="my-1" {...props} />
+                      ),
+                      h3: ({ node, ...props }) => (
+                        <h3 className="font-bold mt-2" {...props} />
+                      ),
+                      strong: ({ node, ...props }) => (
+                        <strong className="font-bold" {...props} />
+                      ),
+                    }}
+                  >
+                    {message.isTyping ? `*${message.text}*` : message.text}
+                  </ReactMarkdown>
+                </div>
               ) : (
                 <span
                   className={`inline-block p-2 rounded-lg border border-[#363636] bg-white text-[#363636]`}
