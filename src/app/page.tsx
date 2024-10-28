@@ -42,7 +42,7 @@ export default function Component() {
       const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
 
       // Si el usuario está cerca del final, activamos el autoscroll
-      if (scrollHeight - scrollTop - clientHeight < 50) {
+      if (scrollHeight - scrollTop - clientHeight < 30) {
         setIsAutoScroll(true);
       } else {
         setIsAutoScroll(false);
@@ -234,19 +234,19 @@ export default function Component() {
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      ul: ({ node, ...props }) => (
+                      ul: (props) => (
                         <ul className="list-disc list-inside" {...props} />
                       ),
-                      ol: ({ node, ...props }) => (
+                      ol: (props) => (
                         <ol className="list-decimal list-inside" {...props} />
                       ),
-                      li: ({ node, ...props }) => (
+                      li: (props) => (
                         <li className="my-1" {...props} />
                       ),
-                      h3: ({ node, ...props }) => (
+                      h3: (props) => (
                         <h3 className="font-bold mt-2" {...props} />
                       ),
-                      strong: ({ node, ...props }) => (
+                      strong: (props) => (
                         <strong className="font-bold" {...props} />
                       ),
                     }}
