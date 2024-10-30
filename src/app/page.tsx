@@ -11,7 +11,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 export default function Component() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [response, setResponse] = useState<
     { text: string; isBot: boolean; isTyping?: boolean; final?: boolean }[]
   >([{ text: "¡Hola! ¿En qué puedo ayudarte?", isBot: true }]);
@@ -20,7 +20,7 @@ export default function Component() {
   const [isLoading, setIsLoading] = useState(false);
   const [isAutoScroll, setIsAutoScroll] = useState(true);
 
-  // Referencia para el auto-scroll
+  // Referencias para el auto-scroll
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -154,8 +154,22 @@ export default function Component() {
     }
   };
 
+  // Integración del Widget de Eleven Labs
+  useEffect(() => {
+    // Verificar si el script ya está cargado
+    const scriptId = "elevenlabs-convai-script";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.src = "https://elevenlabs.io/convai-widget/index.js";
+      script.async = true;
+      script.type = "text/javascript";
+      script.id = scriptId;
+      document.body.appendChild(script);
+    }
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
+    <div className="relative flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
       <h1
         className={`text-4xl font-bold mb-8 text-center transition-opacity duration-1000 ease-in-out ${
           isVisible ? "opacity-100" : "opacity-0"
@@ -197,18 +211,18 @@ export default function Component() {
         </span>
       </h1>
 
-      {/* Icono flotante del chatbot */}
+      {/* Botón flotante del chat */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 bg-white text-[#363636] rounded-full p-4 shadow-lg hover:bg-gray-200 transition-colors border-2 border-[#363636]"
+        onClick={() => setIsChatOpen(!isChatOpen)}
+        className="fixed bottom-4 right-4 bg-white text-[#363636] rounded-full p-4 shadow-lg hover:bg-gray-200 transition-colors border-2 border-[#363636] z-50"
       >
-        {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
+        {isChatOpen ? <X size={24} /> : <MessageCircle size={24} />}
       </button>
 
       {/* Ventana del chat */}
       <div
-        className={`fixed bottom-20 right-4 w-80 bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out border-2 border-[#363636] ${
-          isOpen
+        className={`fixed bottom-20 right-4 w-80 bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out border-2 border-[#363636] z-40 ${
+          isChatOpen
             ? "opacity-100 scale-100"
             : "opacity-0 scale-95 pointer-events-none"
         }`}
@@ -225,7 +239,9 @@ export default function Component() {
           {response.map((message, index) => (
             <div
               key={index}
-              className={`mb-4 ${message.isBot ? "text-left" : "text-right"}`}
+              className={`mb-4 ${
+                message.isBot ? "text-left" : "text-right"
+              }`}
             >
               {message.isBot ? (
                 <div
@@ -240,9 +256,7 @@ export default function Component() {
                       ol: (props) => (
                         <ol className="list-decimal list-inside" {...props} />
                       ),
-                      li: (props) => (
-                        <li className="my-1" {...props} />
-                      ),
+                      li: (props) => <li className="my-1" {...props} />,
                       h3: (props) => (
                         <h3 className="font-bold mt-2" {...props} />
                       ),
@@ -263,6 +277,7 @@ export default function Component() {
               )}
             </div>
           ))}
+
           {/* Referencia para el auto-scroll */}
           <div ref={messagesEndRef} />
         </ScrollArea>
@@ -285,6 +300,11 @@ export default function Component() {
             {isLoading ? "Cargando..." : "Enviar"}
           </Button>
         </div>
+      </div>
+
+      {/* Widget de Eleven Labs en la parte inferior izquierda */}
+      <div className="fixed bottom-4 left-50 z-30">
+        <elevenlabs-convai agent-id="GuN6gzi1P0Hwq01CN7zV"></elevenlabs-convai>
       </div>
     </div>
   );
