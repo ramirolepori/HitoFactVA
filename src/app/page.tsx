@@ -242,9 +242,10 @@ export default function Component() {
 
         {isChatOpen && (
           <div
-            className={`bg-[#0f0f0f] flex flex-col rounded-lg shadow-xl
-                w-full h-full md:w-96 md:h-[36rem] md:max-h-screen
-                ${isExpanded ? "md:w-[32rem] md:h-[40rem]" : ""}`}
+  className={`bg-[#0f0f0f] flex flex-col rounded-2xl shadow-xl overflow-hidden
+      w-full h-full md:w-96 md:h-[36rem] md:max-h-screen
+      ${isExpanded ? "md:w-[32rem] md:h-[40rem]" : ""}
+      m-4 md:m-0`}
             role="dialog"
             aria-label="Ventana de chat"
           >
