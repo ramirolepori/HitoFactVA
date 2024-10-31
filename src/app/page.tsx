@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { FiMinimize2, FiMaximize2 } from "react-icons/fi";
 
 export default function Component() {
   // Variables de estado
@@ -296,24 +297,10 @@ export default function Component() {
                 >
                   {isExpanded ? (
                     // Icono de dos flechas apuntando hacia el centro (contraer chat)
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path d="M4.293 9.293a1 1 0 011.414 0L10 13.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" />
-                    </svg>
+                    <FiMinimize2 className="h-5 w-5" />
                   ) : (
                     // Icono anterior para expandir el chat
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 -960 960 960"
-                      fill="currentColor"
-                    >
-                      <path d="M120-120v-320h80v184l504-504H520v-80h320v320h-80v-184L256-200h184v80H120Z" />
-                    </svg>
+                    <FiMaximize2 className="h-5 w-5" />
                   )}
                 </Button>
 
@@ -534,7 +521,7 @@ export default function Component() {
                       className="w-full h-full object-contain rounded-full"
                     />
                   </div>
-                  <div className="w-full max-w-md">
+                  <div className="max-w-md mx-auto">
                     <elevenlabs-convai
                       agent-id="GuN6gzi1P0Hwq01CN7zV"
                       dark-mode
@@ -588,14 +575,11 @@ export default function Component() {
       `}</style>
       <style jsx global>{`
         elevenlabs-convai {
-          display: flex !important;
-          width: 100% !important;
-          height: 100% !important;
-          align-items: center !important;
-          justify-content: center !important;
-          max-width: 100% !important;
-          max-height: 300px !important;
+          display: block !important;
           margin: 0 auto !important;
+          padding: 0 !important;
+          width: auto !important;
+          max-width: 100% !important;
         }
         elevenlabs-convai::part(footer) {
           display: none !important;
