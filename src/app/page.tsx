@@ -242,7 +242,7 @@ export default function Component() {
 
         {isChatOpen && (
           <div
-  className={`bg-[#0f0f0f] flex flex-col rounded-2xl shadow-xl overflow-hidden
+            className={`bg-[#0f0f0f] flex flex-col rounded-3xl shadow-xl overflow-hidden
       w-full h-full md:w-96 md:h-[80vh] md:max-h-screen
       ${isExpanded ? "md:w-[32rem] md:h-[90vh]" : ""}
       m-4 md:m-0`}
@@ -522,7 +522,7 @@ export default function Component() {
                       className="w-full h-full object-contain rounded-full"
                     />
                   </div>
-                  <div className="max-w-md mx-auto">
+                  <div className="max-w-md mr-4">
                     <elevenlabs-convai
                       agent-id="GuN6gzi1P0Hwq01CN7zV"
                       dark-mode
