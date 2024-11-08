@@ -1,17 +1,24 @@
 "use client";
 
 export const dynamic = "force-dynamic";
-
 import { useState, useEffect, useRef } from "react";
+import Vapi from "@vapi-ai/web";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from 'next/image';
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { FiMinimize2, FiMaximize2 } from "react-icons/fi";
+import {
+  FiMinimize2,
+  FiMaximize2,
+  FiPhoneIncoming,
+  FiPhoneOff,
+} from "react-icons/fi";
 
 export default function Component() {
   // Variables de estado
+
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [response, setResponse] = useState<
@@ -21,16 +28,31 @@ export default function Component() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAutoScroll, setIsAutoScroll] = useState(true);
-  const [isCallActive, setIsCallActive] = useState(false);
-  const [showElevenLabs, setShowElevenLabs] = useState(false);
+  const [isVoiceActive, setisVoiceActive] = useState(false);
+  const [isInCall, setIsInCall] = useState(false);
+  const vapiRef = useRef<Vapi | null>(null);
+  useEffect(() => {
+    vapiRef.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY || "");
+
+    return () => {
+      // Limpieza al desmontar el componente
+      if (vapiRef.current) {
+        vapiRef.current.stop();
+        vapiRef.current = null;
+      }
+    };
+  }, []);
 
   // Referencias y efectos
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 500);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -149,22 +171,39 @@ export default function Component() {
   };
 
   const toggleCall = () => {
-    setIsCallActive(!isCallActive);
-    setShowElevenLabs(!showElevenLabs);
+    if (isVoiceActive) {
+      // Si ya está activa, finaliza la llamada
+      setisVoiceActive(false);
+    } else {
+      // Iniciar una nueva llamada
+      setisVoiceActive(true);
+    }
   };
 
-  // Cargar el script de ElevenLabs
-  useEffect(() => {
-    const scriptId = "elevenlabs-convai-script";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.src = "https://elevenlabs.io/convai-widget/index.js";
-      script.async = true;
-      script.type = "text/javascript";
-      script.id = scriptId;
-      document.body.appendChild(script);
+  const StartCall = async () => {
+    try {
+      console.log("Iniciando llamada...");
+      if (vapiRef.current) {
+        await vapiRef.current.start("79158522-54ac-469a-ac1b-2fcfc6163d34");
+      }
+      console.log("Llamada iniciada.");
+      setIsInCall(true);
+    } catch (error) {
+      console.error("Error al iniciar la llamada:", error);
     }
-  }, []);
+  };
+
+  const StopCall = async () => {
+    try {
+      console.log("Intentando detener la llamada...");
+      const result = vapiRef.current ? await vapiRef.current.stop() : null;
+      console.log("Resultado de vapi.stop():", result);
+      console.log("Llamada detenida correctamente.");
+      setIsInCall(false);
+    } catch (error) {
+      console.error("Error al detener la llamada:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
@@ -243,32 +282,34 @@ export default function Component() {
         {isChatOpen && (
           <div
             className={`bg-[#0f0f0f] flex flex-col rounded-3xl shadow-xl overflow-hidden
-      w-full h-full md:w-96 md:h-[80vh] md:max-h-screen
-      ${isExpanded ? "md:w-[32rem] md:h-[90vh]" : ""}
-      m-4 md:m-0`}
+          w-full h-full md:w-96 md:h-[80vh] md:max-h-screen
+          ${isExpanded ? "md:w-[32rem] md:h-[90vh]" : ""}
+          m-4 md:m-0`}
             role="dialog"
             aria-label="Ventana de chat"
           >
             <div className="flex justify-between items-center p-4 bg-[#1e1e21] border-b border-[#2e2e32]">
               <div className="flex items-center space-x-2">
+                {/* Botón de llamada */}
                 <Button
                   onClick={toggleCall}
                   className={`text-white font-bold rounded-full p-2 w-10 h-10 flex items-center justify-center relative overflow-hidden`}
                   style={{
-                    backgroundColor: isCallActive ? "#000000" : undefined,
-                    backgroundImage: isCallActive
+                    backgroundColor: isVoiceActive ? "#000000" : undefined,
+                    backgroundImage: isVoiceActive
                       ? undefined
                       : "linear-gradient(45deg, #4CAF50, #8BC34A)",
-                    backgroundSize: isCallActive ? undefined : "200% 200%",
-                    animation: isCallActive
+                    backgroundSize: isVoiceActive ? undefined : "200% 200%",
+                    animation: isVoiceActive
                       ? "none"
                       : "gradient 5s ease infinite",
                   }}
                   aria-label={
-                    isCallActive ? "Finalizar llamada" : "Iniciar llamada"
+                    isVoiceActive ? "Finalizar llamada" : "Iniciar llamada"
                   }
                 >
-                  {isCallActive ? (
+                  {isVoiceActive ? (
+                    // Icono de finalizar llamada
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"
@@ -278,6 +319,7 @@ export default function Component() {
                       <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                   ) : (
+                    // Icono de iniciar llamada
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"
@@ -297,10 +339,8 @@ export default function Component() {
                   aria-label={isExpanded ? "Contraer chat" : "Expandir chat"}
                 >
                   {isExpanded ? (
-                    // Icono de dos flechas apuntando hacia el centro (contraer chat)
                     <FiMinimize2 className="h-5 w-5" />
                   ) : (
-                    // Icono anterior para expandir el chat
                     <FiMaximize2 className="h-5 w-5" />
                   )}
                 </Button>
@@ -329,8 +369,9 @@ export default function Component() {
             </div>
 
             <div className="flex-1 flex flex-col relative overflow-y-auto">
-              {!showElevenLabs ? (
+              {!isVoiceActive ? (
                 <>
+                  {/* Vista de chat */}
                   <ScrollArea
                     className="flex-1 p-4 overflow-y-auto"
                     onScroll={handleScroll}
@@ -342,7 +383,7 @@ export default function Component() {
                           {message.isTyping ? (
                             // Animación de escritura
                             <div className="flex items-end mb-4">
-                              <img
+                              <Image
                                 src="https://cdn.icon-icons.com/icons2/1371/PNG/512/robot02_90810.png"
                                 alt="Avatar del bot"
                                 className="w-6 h-6 rounded-full mr-2"
@@ -428,7 +469,7 @@ export default function Component() {
                                   </span>
                                 </div>
                               </div>
-                              <img
+                              <Image
                                 src={
                                   message.isBot
                                     ? "https://cdn.icon-icons.com/icons2/1371/PNG/512/robot02_90810.png"
@@ -514,20 +555,63 @@ export default function Component() {
                   </div>
                 </>
               ) : (
+                // Vista de llamada
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f0f0f]">
                   <div className="w-48 h-48 mb-8">
-                    <img
+                    <Image
+                      unoptimized
                       src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoai5-ocWAosmdTdIcRPgGaUerEL7vUuWab5.gif"
-                      alt="Forma de onda de audio"
+                      alt="Audio waveform"
                       className="w-full h-full object-contain rounded-full"
                     />
                   </div>
-                  <div className="max-w-md mr-4">
-                    <elevenlabs-convai
-                      agent-id="GuN6gzi1P0Hwq01CN7zV"
-                      dark-mode
-                      hide-branding
-                    ></elevenlabs-convai>
+                  <div
+                    className="w-full max-w-md mt-4"                  >
+                    <div id="vapi-button-container">
+                      {!isInCall ? (
+                        <Button
+                          onClick={StartCall}
+                          id="vapi-start-button"
+                          style={{
+                            backgroundColor: "#4CAF50",
+                            fontSize: "24px",
+                            color: "#FFFFFF",
+                            borderRadius: "50%",
+                            padding: "10px",
+                            margin: "10px",
+                            width: "60px",
+                            height: "60px",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            display: "flex",
+                          }}
+                          aria-label="Iniciar llamada"
+                        >
+                          <FiPhoneIncoming />
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={StopCall}
+                          id="vapi-stop-button"
+                          style={{
+                            backgroundColor: "#e61010",
+                            fontSize: "24px",
+                            color: "#FFFFFF",
+                            borderRadius: "50%",
+                            padding: "10px",
+                            margin: "10px",
+                            width: "60px",
+                            height: "60px",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            display: "flex",
+                          }}
+                          aria-label="Finalizar llamada"
+                        >
+                          <FiPhoneOff />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -537,6 +621,20 @@ export default function Component() {
       </div>
 
       <style jsx>{`
+        @keyframes pulse {
+          0% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
         @keyframes blink {
           0% {
             opacity: 0.2;
@@ -572,18 +670,6 @@ export default function Component() {
           100% {
             background-position: 0% 50%;
           }
-        }
-      `}</style>
-      <style jsx global>{`
-        elevenlabs-convai {
-          display: block !important;
-          margin: 0 auto !important;
-          padding: 0 !important;
-          width: auto !important;
-          max-width: 100% !important;
-        }
-        elevenlabs-convai::part(footer) {
-          display: none !important;
         }
       `}</style>
     </div>

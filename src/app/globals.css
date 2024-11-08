@@ -70,3 +70,10 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+#vapi-button-container {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
