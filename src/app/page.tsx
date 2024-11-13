@@ -214,7 +214,7 @@ export default function Component() {
       >
         Chatbot HITO{" "}
         <span className="relative inline-flex items-center justify-center ml-2">
-          <svg className="absolute w-full h-full" viewBox="0 0 100 40">
+          <svg className="absolute w-full h-full" viewBox="0 -5 100 50">
             <defs>
               <linearGradient
                 id="capsuleGradient"
@@ -235,8 +235,8 @@ export default function Component() {
               </filter>
             </defs>
             <rect
-              width="100"
-              height="40"
+              width="95"
+              height="41"
               rx="20"
               ry="20"
               fill="url(#capsuleGradient)"
