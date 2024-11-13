@@ -6,7 +6,7 @@ import Vapi from "@vapi-ai/web";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import Image from 'next/image';
+import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -14,6 +14,7 @@ import {
   FiMaximize2,
   FiPhoneIncoming,
   FiPhoneOff,
+  FiUser,
 } from "react-icons/fi";
 
 export default function Component() {
@@ -384,9 +385,11 @@ export default function Component() {
                             // Animación de escritura
                             <div className="flex items-end mb-4">
                               <Image
-                                src="https://cdn.icon-icons.com/icons2/1371/PNG/512/robot02_90810.png"
+                                src="/images/logo_hito_blanco_sin_fondo.webp"
                                 alt="Avatar del bot"
                                 className="w-6 h-6 rounded-full mr-2"
+                                width={24} // Ajusta el tamaño según lo que necesites
+                                height={24} // Ajusta el tamaño según lo que necesites
                               />
                               <div className="bg-[#1e1e21] text-gray-300 px-4 py-2 rounded-2xl rounded-bl-md inline-block">
                                 <div
@@ -469,23 +472,17 @@ export default function Component() {
                                   </span>
                                 </div>
                               </div>
-                              <Image
-                                src={
-                                  message.isBot
-                                    ? "https://cdn.icon-icons.com/icons2/1371/PNG/512/robot02_90810.png"
-                                    : "https://i.pravatar.cc/100?img=7"
-                                }
-                                alt={
-                                  message.isBot
-                                    ? "Avatar del bot"
-                                    : "Avatar del usuario"
-                                }
-                                className={`w-6 h-6 rounded-full${
-                                  message.isBot
-                                    ? " order-1 mr-2"
-                                    : " order-2 ml-2"
-                                }`}
-                              />
+                              {message.isBot ? (
+                                <Image
+                                  src="/images/logo_hito_blanco_sin_fondo.webp"
+                                  alt="Avatar del bot"
+                                  width={24} // Ajusta el tamaño según lo que necesites
+                                  height={24} // Ajusta el tamaño según lo que necesites
+                                  className="w-6 h-6 rounded-full mr-2"
+                                />
+                              ) : (
+                                <FiUser className="w-6 h-6 text-white" />
+                              )}
                             </div>
                           )}
                         </div>
@@ -515,7 +512,7 @@ export default function Component() {
                       />
                       <Button
                         type="submit"
-                        className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-200  ease-in-out text-white bg-[#2e2e32] hover:bg-[#3e3e42] focus:outline-none absolute right-1 top-1/2 transform -translate-y-1/2"
+                        className="inline-flex items-center justify-center rounded-full h-8 w-8 transition duration-200  ease-in-out text-white bg-[#2e2e32] hover:bg-[#3e3e42] focus:outline-none absolute right-1 top-1/2 transform -translate-y-1/2"
                         disabled={isLoading}
                         aria-label="Enviar mensaje"
                       >
@@ -565,8 +562,7 @@ export default function Component() {
                       className="w-full h-full object-contain rounded-full"
                     />
                   </div>
-                  <div
-                    className="w-full max-w-md mt-4"                  >
+                  <div className="w-full max-w-md mt-4">
                     <div id="vapi-button-container">
                       {!isInCall ? (
                         <Button
