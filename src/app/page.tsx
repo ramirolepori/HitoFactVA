@@ -557,6 +557,8 @@ export default function Component() {
                   <div className="w-48 h-48 mb-8">
                     <Image
                       unoptimized
+                      width={192} // Ajusta el tamaño según lo que necesites
+                      height={192} // Ajusta el tamaño según lo que necesites
                       src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoai5-ocWAosmdTdIcRPgGaUerEL7vUuWab5.gif"
                       alt="Audio waveform"
                       className="w-full h-full object-contain rounded-full"
