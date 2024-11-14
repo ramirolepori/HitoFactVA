@@ -207,7 +207,7 @@ export default function Component() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4 overflow-hidden">
       <h1
         className={`text-4xl font-bold mb-8 text-center transition-opacity duration-1000 ease-in-out ${
           isVisible ? "opacity-100" : "opacity-0"
@@ -236,8 +236,8 @@ export default function Component() {
               </filter>
             </defs>
             <rect
-              width="95"
-              height="41"
+              width="100"
+              height="48"
               rx="20"
               ry="20"
               fill="url(#capsuleGradient)"
@@ -253,7 +253,7 @@ export default function Component() {
       <div
         className={`fixed ${
           isChatOpen
-            ? "inset-0 md:inset-auto md:right-4 md:bottom-4"
+            ? "inset-0 sm:inset-auto sm:right-4 sm:bottom-4"
             : "bottom-4 right-4"
         } z-50 transition-all duration-300 ease-in-out`}
       >
@@ -283,9 +283,9 @@ export default function Component() {
         {isChatOpen && (
           <div
             className={`bg-[#0f0f0f] flex flex-col rounded-3xl shadow-xl overflow-hidden
-          w-full h-full md:w-96 md:h-[80vh] md:max-h-screen
-          ${isExpanded ? "md:w-[32rem] md:h-[90vh]" : ""}
-          m-4 md:m-0`}
+            w-full max-w-[100vw] h-full max-h-[100vh] sm:max-w-md sm:h-[80vh]
+            ${isExpanded ? "sm:w-[32rem] sm:h-[90vh]" : ""}
+            m-4`}
             role="dialog"
             aria-label="Ventana de chat"
           >
@@ -369,7 +369,7 @@ export default function Component() {
               </div>
             </div>
 
-            <div className="flex-1 flex flex-col relative overflow-y-auto">
+            <div className="flex-1 flex flex-col relative overflow-y-auto max-h-[calc(100vh-150px)]">
               {!isVoiceActive ? (
                 <>
                   {/* Vista de chat */}
@@ -406,8 +406,8 @@ export default function Component() {
                           ) : (
                             // Mensaje normal
                             <div
-                              className={`flex items-end${
-                                message.isBot ? "" : " justify-end"
+                              className={`flex items-end ${
+                                message.isBot ? "" : " flex-row-reverse"
                               }`}
                             >
                               <div
@@ -619,29 +619,12 @@ export default function Component() {
       </div>
 
       <style jsx>{`
-        @keyframes pulse {
-          0% {
-            transform: scale(1);
-            opacity: 1;
-          }
-          50% {
-            transform: scale(1.1);
-            opacity: 0.8;
-          }
-          100% {
-            transform: scale(1);
-            opacity: 1;
-          }
-        }
-        @keyframes blink {
-          0% {
-            opacity: 0.2;
-          }
-          20% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0.2;
+        @media (max-width: 640px) {
+          .chat-container {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+            margin: 0;
           }
         }
         .typing span {
