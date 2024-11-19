@@ -283,7 +283,7 @@ export default function Component() {
         {isChatOpen && (
           <div
             className={`bg-[#0f0f0f] flex flex-col rounded-3xl shadow-xl overflow-hidden
-            w-full max-w-[100vw] h-full max-h-[100vh] sm:max-w-md sm:h-[80vh]
+             max-w-[100vw] h-full max-h-[100vh] sm:h-[80vh]
             ${isExpanded ? "sm:w-[32rem] sm:h-[90vh]" : ""}
             m-4`}
             role="dialog"
