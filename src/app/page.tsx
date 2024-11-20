@@ -245,7 +245,7 @@ export default function Component() {
               className="animate-pulse"
             />
           </svg>
-          <span className="relative z-10 px-4 py-1 text-sm">alpha</span>
+          <span className="relative z-10 px-3 my-4 text-sm">alpha</span>
         </span>
       </h1>
 
