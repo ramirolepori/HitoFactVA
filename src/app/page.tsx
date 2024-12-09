@@ -286,7 +286,7 @@ export default function Component() {
     bg-[#0f0f0f] flex flex-col rounded-3xl shadow-xl overflow-hidden
     w-full h-full        // En pantallas móviles, ancho y alto completos
     sm:w-[30vw] sm:h-[50vh]  // En pantallas >= 640px (sm), se aplican estos tamaños
-    ${isExpanded ? "sm:w-[45vw] sm:h-[95vh]" : ""}
+    ${isExpanded ? "sm:h-[91vh]" : ""}
     sm:m-4 m-0           // Sin margen en móviles (m-0), margen sólo en >= sm (sm:m-4)
   `}
     role="dialog"
