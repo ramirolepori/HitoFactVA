@@ -280,309 +280,360 @@ export default function Component() {
           </Button>
         )}
 
-{isChatOpen && (
-  <div
-    className={`
+        {isChatOpen && (
+          <div
+            className={`
     bg-[#0f0f0f] flex flex-col rounded-3xl shadow-xl overflow-hidden
     w-full h-full        // En pantallas móviles, ancho y alto completos
     sm:w-[30vw] sm:h-[50vh]  // En pantallas >= 640px (sm), se aplican estos tamaños
     ${isExpanded ? "sm:h-[91vh]" : ""}
     sm:m-4 m-0           // Sin margen en móviles (m-0), margen sólo en >= sm (sm:m-4)
   `}
-    role="dialog"
-    aria-label="Ventana de chat"
-  >
-    <div className="flex justify-between items-center p-4 bg-[#1e1e21] border-b border-[#2e2e32]">
-      <div className="flex items-center space-x-2">
-        {/* Botón de llamada */}
-        <Button
-          onClick={toggleCall}
-          className="text-white font-bold rounded-full p-2 w-10 h-10 flex items-center justify-center relative overflow-hidden"
-          style={{
-            backgroundColor: isVoiceActive ? "#000000" : undefined,
-            backgroundImage: isVoiceActive
-              ? undefined
-              : "linear-gradient(45deg, #4CAF50, #8BC34A)",
-            backgroundSize: isVoiceActive ? undefined : "200% 200%",
-            animation: isVoiceActive ? "none" : "gradient 5s ease infinite",
-          }}
-          aria-label={isVoiceActive ? "Finalizar llamada" : "Iniciar llamada"}
-        >
-          {isVoiceActive ? (
-            <FiPhoneOff className="h-5 w-5" />
-          ) : (
-            <FiPhoneIncoming className="h-5 w-5" />
-          )}
-        </Button>
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <Button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="bg-[#2e2e32] hover:bg-[#3e3e42] text-white rounded-full p-2 w-8 h-8 flex items-center justify-center sm:flex hidden"
-          aria-label={isExpanded ? "Contraer chat" : "Expandir chat"}
-        >
-          {isExpanded ? (
-            <FiMinimize2 className="h-5 w-5" />
-          ) : (
-            <FiMaximize2 className="h-5 w-5" />
-          )}
-        </Button>
-
-        <Button
-          onClick={() => setIsChatOpen(false)}
-          className="bg-[#2e2e32] hover:bg-[#3e3e42] text-white rounded-full p-2 w-8 h-8 flex items-center justify-center"
-          aria-label="Cerrar chat"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+            role="dialog"
+            aria-label="Ventana de chat"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </Button>
-      </div>
-    </div>
+            {/* Encabezado fijo */}
+            <div className="flex justify-between items-center p-4 bg-[#1e1e21] border-b border-[#2e2e32]">
+              <div className="flex items-center space-x-2">
+                {/* Botón de llamada */}
+                <Button
+                  onClick={toggleCall}
+                  className="text-white font-bold rounded-full p-2 w-10 h-10 flex items-center justify-center relative overflow-hidden"
+                  style={{
+                    backgroundColor: isVoiceActive ? "#000000" : undefined,
+                    backgroundImage: isVoiceActive
+                      ? undefined
+                      : "linear-gradient(45deg, #4CAF50, #8BC34A)",
+                    backgroundSize: isVoiceActive ? undefined : "200% 200%",
+                    animation: isVoiceActive
+                      ? "none"
+                      : "gradient 5s ease infinite",
+                  }}
+                  aria-label={
+                    isVoiceActive ? "Finalizar llamada" : "Iniciar llamada"
+                  }
+                >
+                  {isVoiceActive ? (
+                    <FiPhoneOff className="h-5 w-5" />
+                  ) : (
+                    <FiPhoneIncoming className="h-5 w-5" />
+                  )}
+                </Button>
+              </div>
 
-    <div className="flex-1 flex flex-col relative">
-      <ScrollArea
-        className="flex-1 p-4 overflow-y-auto"
-        onScroll={handleScroll}
-        ref={scrollAreaRef}
-      >
-        {!isVoiceActive ? (
-          // Vista de Chat
-          <div>
-            {response.map((message, index) => (
-              <div key={index} className="mb-4">
-                {message.isTyping ? (
-                  // Animación de escritura
-                  <div className="flex items-end mb-4">
-                    <Image
-                      src="/images/logo_hito_blanco_sin_fondo.webp"
-                      alt="Avatar del bot"
-                      className="w-6 h-6 rounded-full mr-2"
-                      width={24}
-                      height={24}
+              <div className="flex items-center space-x-2">
+                <Button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="bg-[#2e2e32] hover:bg-[#3e3e42] text-white rounded-full p-2 w-8 h-8 flex items-center justify-center sm:flex hidden"
+                  aria-label={isExpanded ? "Contraer chat" : "Expandir chat"}
+                >
+                  {isExpanded ? (
+                    <FiMinimize2 className="h-5 w-5" />
+                  ) : (
+                    <FiMaximize2 className="h-5 w-5" />
+                  )}
+                </Button>
+
+                <Button
+                  onClick={() => setIsChatOpen(false)}
+                  className="bg-[#2e2e32] hover:bg-[#3e3e42] text-white rounded-full p-2 w-8 h-8 flex items-center justify-center"
+                  aria-label="Cerrar chat"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
                     />
-                    <div className="bg-[#1e1e21] text-gray-300 px-4 py-2 rounded-2xl rounded-bl-md inline-block">
-                      <div
-                        className="typing"
-                        role="status"
-                        aria-label="El bot está escribiendo"
-                      >
-                        <span>.</span>
-                        <span>.</span>
-                        <span>.</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  // Mensaje normal
-                  <div
-                    className={`flex items-end ${
-                      message.isBot ? "" : " flex-row-reverse"
-                    }`}
-                  >
-                    <div
-                      className={`flex flex-col space-y-2 text-sm max-w-[75%] mx-2${
-                        message.isBot
-                          ? " order-2 items-start"
-                          : " order-1 items-end"
-                      }`}
-                    >
-                      <div>
-                        <span
-                          className={`px-4 py-3 rounded-2xl inline-block${
-                            message.isBot
-                              ? " rounded-bl-md bg-[#1e1e21] text-gray-300"
-                              : " rounded-br-md bg-[#2e2e32] text-white"
-                          }`}
-                          role="message"
-                          aria-label={`${
-                            message.isBot
-                              ? "Mensaje del bot"
-                              : "Mensaje del usuario"
-                          }`}
-                        >
-                          {message.isBot ? (
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              components={{
-                                ul: (props) => (
-                                  <ul className="list-disc list-inside" {...props} />
-                                ),
-                                ol: (props) => (
-                                  <ol className="list-decimal list-inside" {...props} />
-                                ),
-                                li: (props) => <li className="my-1" {...props} />,
-                                h3: (props) => (
-                                  <h3 className="font-bold mt-2" {...props} />
-                                ),
-                                strong: (props) => (
-                                  <strong className="font-bold" {...props} />
-                                ),
-                              }}
-                            >
-                              {message.text}
-                            </ReactMarkdown>
-                          ) : (
-                            message.text
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                    {message.isBot ? (
-                      <Image
-                        src="/images/logo_hito_blanco_sin_fondo.webp"
-                        alt="Avatar del bot"
-                        width={24}
-                        height={24}
-                        className="w-6 h-6 rounded-full mr-2"
-                      />
-                    ) : (
-                      <FiUser className="w-6 h-6 text-white" />
-                    )}
-                  </div>
-                )}
+                  </svg>
+                </Button>
               </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-        ) : (
-          // Vista de Llamada
-          <div className="flex flex-col items-center justify-center min-h-full">
-            <div className="w-48 h-48 mb-8">
-              <Image
-                unoptimized
-                width={192}
-                height={192}
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoai5-ocWAosmdTdIcRPgGaUerEL7vUuWab5.gif"
-                alt="Audio waveform"
-                className="w-full h-full object-contain rounded-full"
-              />
             </div>
-            <div className="w-full max-w-md mt-4">
-              <div id="vapi-button-container">
-                {!isInCall ? (
-                  <Button
-                    onClick={StartCall}
-                    id="vapi-start-button"
-                    style={{
-                      backgroundColor: "#4CAF50",
-                      fontSize: "24px",
-                      color: "#FFFFFF",
-                      borderRadius: "50%",
-                      padding: "10px",
-                      margin: "10px",
-                      width: "60px",
-                      height: "60px",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      display: "flex",
-                    }}
-                    aria-label="Iniciar llamada"
-                  >
-                    <FiPhoneIncoming />
-                  </Button>
+
+            {/* Contenedor principal: área de mensajes + input */}
+            <div className="flex-1 flex flex-col relative overflow-hidden">
+              {/* Área con scroll para los mensajes */}
+              <div
+                className="flex-1 p-4 overflow-y-auto chat-scroll-container"
+                ref={scrollAreaRef}
+                onScroll={handleScroll}
+              >
+                {!isVoiceActive ? (
+                  // Vista de Chat
+                  <div>
+                    {response.map((message, index) => (
+                      <div key={index} className="mb-4">
+                        {message.isTyping ? (
+                          // Animación de escritura
+                          <div className="flex items-end mb-4">
+                            <Image
+                              src="/images/logo_hito_blanco_sin_fondo.webp"
+                              alt="Avatar del bot"
+                              className="w-6 h-6 rounded-full mr-2"
+                              width={24}
+                              height={24}
+                            />
+                            <div className="bg-[#1e1e21] text-gray-300 px-4 py-2 rounded-2xl rounded-bl-md inline-block">
+                              <div
+                                className="typing"
+                                role="status"
+                                aria-label="El bot está escribiendo"
+                              >
+                                <span>.</span>
+                                <span>.</span>
+                                <span>.</span>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          // Mensaje normal
+                          <div
+                            className={`flex items-end ${
+                              message.isBot ? "" : " flex-row-reverse"
+                            }`}
+                          >
+                            <div
+                              className={`flex flex-col space-y-2 text-sm max-w-[75%] mx-2${
+                                message.isBot
+                                  ? " order-2 items-start"
+                                  : " order-1 items-end"
+                              }`}
+                            >
+                              <div>
+                                <span
+                                  className={`px-4 py-3 rounded-2xl inline-block${
+                                    message.isBot
+                                      ? " rounded-bl-md bg-[#1e1e21] text-gray-300"
+                                      : " rounded-br-md bg-[#2e2e32] text-white"
+                                  }`}
+                                  role="message"
+                                  aria-label={`${
+                                    message.isBot
+                                      ? "Mensaje del bot"
+                                      : "Mensaje del usuario"
+                                  }`}
+                                >
+                                  {message.isBot ? (
+                                    <ReactMarkdown
+                                      remarkPlugins={[remarkGfm]}
+                                      components={{
+                                        ul: (props) => (
+                                          <ul
+                                            className="list-disc list-inside"
+                                            {...props}
+                                          />
+                                        ),
+                                        ol: (props) => (
+                                          <ol
+                                            className="list-decimal list-inside"
+                                            {...props}
+                                          />
+                                        ),
+                                        li: (props) => (
+                                          <li className="my-1" {...props} />
+                                        ),
+                                        h3: (props) => (
+                                          <h3
+                                            className="font-bold mt-2"
+                                            {...props}
+                                          />
+                                        ),
+                                        strong: (props) => (
+                                          <strong
+                                            className="font-bold"
+                                            {...props}
+                                          />
+                                        ),
+                                      }}
+                                    >
+                                      {message.text}
+                                    </ReactMarkdown>
+                                  ) : (
+                                    message.text
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                            {message.isBot ? (
+                              <Image
+                                src="/images/logo_hito_blanco_sin_fondo.webp"
+                                alt="Avatar del bot"
+                                width={24}
+                                height={24}
+                                className="w-6 h-6 rounded-full mr-2"
+                              />
+                            ) : (
+                              <FiUser className="w-6 h-6 text-white" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                  </div>
                 ) : (
-                  <Button
-                    onClick={StopCall}
-                    id="vapi-stop-button"
-                    style={{
-                      backgroundColor: "#e61010",
-                      fontSize: "24px",
-                      color: "#FFFFFF",
-                      borderRadius: "50%",
-                      padding: "10px",
-                      margin: "10px",
-                      width: "60px",
-                      height: "60px",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      display: "flex",
-                    }}
-                    aria-label="Finalizar llamada"
-                  >
-                    <FiPhoneOff />
-                  </Button>
+                  // Vista de Llamada
+                  <div className="flex flex-col items-center justify-center min-h-full">
+                    <div className="w-48 h-48 mb-8">
+                      <Image
+                        unoptimized
+                        width={192}
+                        height={192}
+                        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoai5-ocWAosmdTdIcRPgGaUerEL7vUuWab5.gif"
+                        alt="Audio waveform"
+                        className="w-full h-full object-contain rounded-full"
+                      />
+                    </div>
+                    <div className="w-full max-w-md mt-4">
+                      <div id="vapi-button-container">
+                        {!isInCall ? (
+                          <Button
+                            onClick={StartCall}
+                            id="vapi-start-button"
+                            style={{
+                              backgroundColor: "#4CAF50",
+                              fontSize: "24px",
+                              color: "#FFFFFF",
+                              borderRadius: "50%",
+                              padding: "10px",
+                              margin: "10px",
+                              width: "60px",
+                              height: "60px",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              display: "flex",
+                            }}
+                            aria-label="Iniciar llamada"
+                          >
+                            <FiPhoneIncoming />
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={StopCall}
+                            id="vapi-stop-button"
+                            style={{
+                              backgroundColor: "#e61010",
+                              fontSize: "24px",
+                              color: "#FFFFFF",
+                              borderRadius: "50%",
+                              padding: "10px",
+                              margin: "10px",
+                              width: "60px",
+                              height: "60px",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              display: "flex",
+                            }}
+                            aria-label="Finalizar llamada"
+                          >
+                            <FiPhoneOff />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
+
+              {/* Pie con el input, fuera del contenedor con scroll */}
+              {!isVoiceActive && (
+                <div className="border-t border-[#2e2e32] p-4 bg-[#0f0f0f]">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSubmit();
+                    }}
+                    className="relative flex"
+                  >
+                    <Input
+                      type="text"
+                      placeholder="Escribe un mensaje..."
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-300 placeholder-gray-500 pl-5 pr-16 bg-[#1e1e21] border-2 border-[#2e2e32] focus:border-[#2e2e32] rounded-2xl py-2"
+                      disabled={isLoading}
+                      aria-label="Entrada de mensaje"
+                    />
+                    <Button
+                      type="submit"
+                      className="inline-flex items-center justify-center rounded-full h-8 w-8 transition duration-200 ease-in-out text-white bg-[#2e2e32] hover:bg-[#3e3e42] focus:outline-none absolute right-1 top-1/2 transform -translate-y-1/2"
+                      disabled={isLoading}
+                      aria-label="Enviar mensaje"
+                    >
+                      {isLoading ? (
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8H4z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-6 w-6 transform rotate-90"
+                        >
+                          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                        </svg>
+                      )}
+                    </Button>
+                  </form>
+                </div>
+              )}
             </div>
           </div>
         )}
-      </ScrollArea>
-
-      {!isVoiceActive && (
-        <div className="border-t border-[#2e2e32] p-4 bg-[#0f0f0f]">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit();
-            }}
-            className="relative flex"
-          >
-            <Input
-              type="text"
-              placeholder="Escribe un mensaje..."
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-300 placeholder-gray-500 pl-5 pr-16 bg-[#1e1e21] border-2 border-[#2e2e32] focus:border-[#2e2e32] rounded-2xl py-2"
-              disabled={isLoading}
-              aria-label="Entrada de mensaje"
-            />
-            <Button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-full h-8 w-8 transition duration-200 ease-in-out text-white bg-[#2e2e32] hover:bg-[#3e3e42] focus:outline-none absolute right-1 top-1/2 transform -translate-y-1/2"
-              disabled={isLoading}
-              aria-label="Enviar mensaje"
-            >
-              {isLoading ? (
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8H4z"
-                  ></path>
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="h-6 w-6 transform rotate-90"
-                >
-                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                </svg>
-              )}
-            </Button>
-          </form>
-        </div>
-      )}
-    </div>
-  </div>
-)}
-
       </div>
 
       <style jsx>{`
+        .chat-scroll-container {
+          /* Para Firefox */
+          scrollbar-width: thin;
+          scrollbar-color: #3e3e42 #1e1e21; /* thumb color #3e3e42, track color #1e1e21 */
+        }
+
+        /* Para Chrome, Safari, Edge y otros basados en WebKit */
+        .chat-scroll-container::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+
+        .chat-scroll-container::-webkit-scrollbar-track {
+          background: #1e1e21;
+          border-radius: 4px;
+        }
+
+        .chat-scroll-container::-webkit-scrollbar-thumb {
+          background: #3e3e42;
+          border-radius: 4px;
+        }
+
+        .chat-scroll-container::-webkit-scrollbar-thumb:hover {
+          background: #5e5e62;
+        }
 
         .typing span {
           font-size: 1.25rem;
