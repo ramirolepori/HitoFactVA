@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from "react";
 import Vapi from "@vapi-ai/web";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
