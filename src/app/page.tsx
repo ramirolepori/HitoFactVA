@@ -480,59 +480,37 @@ export default function Component() {
                 ) : (
                   // Vista de Llamada
                   <div className="flex flex-col items-center justify-center min-h-full">
-                    <div className="w-48 h-48 mb-8">
+                    <div className="mb-8 flex items-center justify-center">
                       <Image
                         unoptimized
                         width={192}
                         height={192}
                         src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoai5-ocWAosmdTdIcRPgGaUerEL7vUuWab5.gif"
                         alt="Audio waveform"
-                        className="w-full h-full object-contain rounded-full"
+                        className="w-55 h-55 sm:w-39 sm:h-39 md:w-40 md:h-40 object-contain rounded-full"
                       />
                     </div>
-                    <div className="w-full max-w-md mt-4">
+                    <div className="w-full max-w-md mt-4 flex items-center justify-center">
                       <div id="vapi-button-container">
                         {!isInCall ? (
                           <Button
                             onClick={StartCall}
                             id="vapi-start-button"
-                            style={{
-                              backgroundColor: "#4CAF50",
-                              fontSize: "24px",
-                              color: "#FFFFFF",
-                              borderRadius: "50%",
-                              padding: "10px",
-                              margin: "10px",
-                              width: "60px",
-                              height: "60px",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              display: "flex",
-                            }}
+                            className="flex items-center justify-center bg-[#4CAF50] text-white rounded-full 
+                     p-2 m-2 w-12 h-12 sm:w-9 sm:h-9 md:w-9 md:h-9"
                             aria-label="Iniciar llamada"
                           >
-                            <FiPhoneIncoming />
+                            <FiPhoneIncoming className="w-12 h-12 sm:w-9 sm:h-9 md:w-9 md:h-9" />
                           </Button>
                         ) : (
                           <Button
                             onClick={StopCall}
                             id="vapi-stop-button"
-                            style={{
-                              backgroundColor: "#e61010",
-                              fontSize: "24px",
-                              color: "#FFFFFF",
-                              borderRadius: "50%",
-                              padding: "10px",
-                              margin: "10px",
-                              width: "60px",
-                              height: "60px",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              display: "flex",
-                            }}
+                            className="flex items-center justify-center bg-[#e61010] text-white rounded-full 
+                     p-2 m-2 w-12 h-12 sm:w-9 sm:h-9 md:w-9 md:h-9"
                             aria-label="Finalizar llamada"
                           >
-                            <FiPhoneOff />
+                            <FiPhoneOff className="w-12 h-12 sm:w-9 sm:h-9 md:w-9 md:h-9" />
                           </Button>
                         )}
                       </div>
