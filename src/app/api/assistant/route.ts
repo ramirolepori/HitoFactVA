@@ -69,9 +69,8 @@ export async function POST(req: Request) {
 
   return new Response(stream, {
     headers: {
-      "Content-Type": "text/event-stream",
+      "Content-Type": "text/plain",
       "Cache-Control": "no-cache",
-      Connection: "keep-alive",
     },
   });
 }
