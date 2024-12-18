@@ -55,7 +55,9 @@ export async function POST(req: Request) {
         (run as unknown as EventEmitter).on("end", () => {
           const chunk = encoder.encode(""); //assistant >
           controller.enqueue(chunk);
+          console.log(assistantResponse);
           controller.close();
+          console.log(assistantResponse);
 
           // Imprimir la respuesta completa del asistente en consola
           console.log("Respuesta del asistente:", assistantResponse);
