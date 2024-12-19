@@ -212,7 +212,7 @@ export default function Component() {
           isVisible ? "opacity-100" : "opacity-0"
         }`}
       >
-        Chatbot HITO{" "}
+        Chatbot Factibilidad HITO{" "}
         <span className="relative inline-flex items-center justify-center ml-2">
           <svg className="absolute w-full h-full" viewBox="0 -5 100 50">
             <defs>
