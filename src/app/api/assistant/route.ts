@@ -3,6 +3,9 @@
 import OpenAI from "openai";
 import { EventEmitter } from "events";
 
+
+export const runtime = 'edge'; // Habilitar el runtime Edge
+
 const openai = new OpenAI();
 
 export async function POST(req: Request) {
