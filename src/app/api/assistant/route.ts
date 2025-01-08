@@ -9,29 +9,37 @@ export const runtime = 'edge'; // Habilitar el runtime Edge
 const openai = new OpenAI();
 
 export async function POST(req: Request) {
-  const { prompt } = await req.json();
-  console.log("Prompt recibido:", prompt);
+  const { prompt, threadId } = await req.json();
+  console.log("Prompt recibido:", prompt, "ThreadId recibido:", threadId);
 
   const encoder = new TextEncoder();
 
   // Variable para acumular la respuesta del asistente
   let assistantResponse = "";
 
+  // OBTENER O CREAR EL HILO
+  let currentThreadId = threadId;
+  if (!currentThreadId) {
+    // No hay threadId; creamos un hilo nuevo
+    const thread = await openai.beta.threads.create();
+    currentThreadId = thread.id;
+    console.log("Nuevo hilo creado con ID:", currentThreadId);
+  } else {
+    // Ya tenemos un hilo en uso
+    console.log("Usando hilo existente con ID:", currentThreadId);
+  }
+
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        // Crear un thread para la conversación
-        const thread = await openai.beta.threads.create();
-        console.log("Thread creado:", thread.id);
-
         // Agregar el mensaje del usuario
-        await openai.beta.threads.messages.create(thread.id, {
+        await openai.beta.threads.messages.create(currentThreadId, {
           role: "user",
           content: prompt,
         });
 
         // Iniciar el proceso de streaming de la respuesta
-        const run = openai.beta.threads.runs.stream(thread.id, {
+        const run = openai.beta.threads.runs.stream(currentThreadId, {
           assistant_id: "asst_UJULGrXySHIgZE42X5bpjuMb",
         });
 
@@ -56,11 +64,11 @@ export async function POST(req: Request) {
 
         // Escuchar el evento 'end' para saber cuándo ha terminado el streaming
         (run as unknown as EventEmitter).on("end", () => {
-          const chunk = encoder.encode(""); //assistant >
+           // Enviamos un chunk final con el threadId para que el cliente lo “pesque”
+          const finalChunk = `[HITO_THREAD_ID]:${currentThreadId}`;
+          const chunk = encoder.encode(finalChunk); //assistant >
           controller.enqueue(chunk);
-          console.log(assistantResponse);
           controller.close();
-          console.log(assistantResponse);
 
           // Imprimir la respuesta completa del asistente en consola
           console.log("Respuesta del asistente:", assistantResponse);
@@ -76,6 +84,7 @@ export async function POST(req: Request) {
     headers: {
       "Content-Type": "text/plain",
       "Cache-Control": "no-cache",
+      "Transfer-Encoding": "chunked",
     },
   });
 }

@@ -18,7 +18,7 @@ import {
 
 export default function Component() {
   // Variables de estado
-
+  const [threadId, setThreadId] = useState<string | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [response, setResponse] = useState<
@@ -96,7 +96,7 @@ export default function Component() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt: userPrompt }),
+        body: JSON.stringify({ prompt: userPrompt, threadId }),
       });
 
       if (!res.ok) {
@@ -117,7 +117,16 @@ export default function Component() {
 
         if (value) {
           let chunkValue = decoder.decode(value);
-          chunkValue = chunkValue.replace(/【\d+:\d+†source】/g, "");
+
+          // Chequeamos si en el chunk viene el [HITO_THREAD_ID]
+          const match = chunkValue.match(/\[HITO_THREAD_ID\]:(.*)$/);
+          if (match && match[1]) {
+            const newThreadId = match[1].trim();
+            setThreadId(newThreadId);
+            // Borramos esa parte del chunk para que no aparezca en pantalla
+            chunkValue = chunkValue.replace(/\[HITO_THREAD_ID\]:.*$/, "");
+          }
+           // Acumulamos el texto que no sea ID
           botMessage += chunkValue;
 
           // Actualizar el mensaje del bot en tiempo real
